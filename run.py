@@ -6,10 +6,12 @@ import os
 import sys
 import config
 import requests
+import time
 
 from togglapi import api
 from toggltarget import target
 from workingtime import workingtime
+from visualization import visualizer
 
 
 def internet_on():
@@ -31,7 +33,8 @@ def getTerminalSize():
             import fcntl
             import termios
             import struct
-            cr = struct.unpack('hh', fcntl.ioctl(fd, termios.TIOCGWINSZ, '1234'))
+            cr = struct.unpack('hh', fcntl.ioctl(
+                fd, termios.TIOCGWINSZ, '1234'))
         except:
             return
         return cr
@@ -63,7 +66,8 @@ def percentile_bar(percentage, tolerance):
 
     percentile_bar = "{0:.2f}% ".format(percentage * 100)
     if tolerance > 0:
-        percentile_bar += "[{}]".format(progress_bar[0:mark_pos] + "|" + progress_bar[mark_pos + 1:])
+        percentile_bar += "[{}]".format(progress_bar[0:mark_pos] +
+                                        "|" + progress_bar[mark_pos + 1:])
     else:
         percentile_bar += "[{}]".format(progress_bar)
 
@@ -84,9 +88,11 @@ def hilite(string, status, bold):
 
 
 def main():
-    w = workingtime.WorkingTime(config.WORKING_HOURS_PER_DAY, config.BUSINESS_DAYS, config.WEEK_DAYS)
+    w = workingtime.WorkingTime(
+        config.WORKING_HOURS_PER_DAY, config.BUSINESS_DAYS, config.WEEK_DAYS)
     a = api.TogglAPI(config.API_TOKEN, config.TIMEZONE)
     t = target.Target()
+    v = visualizer.Visualizer()
 
     print("Hi")
     print("Checking Internet connectivity...")
@@ -97,7 +103,8 @@ def main():
     print("Internet seems fine!")
     print("\nTrying to connect to Toggl, hang on!\n")
     try:
-        t.achieved_hours = a.get_hours_tracked(start_date=w.month_start, end_date=w.now)
+        t.achieved_hours = a.get_hours_tracked(
+            start_date=w.month_start, end_date=w.now)
     except:
         print("OMG! Toggle request failed for some mysterious reason!")
         print("Good Bye Cruel World!")
@@ -106,16 +113,19 @@ def main():
     t.required_hours = w.required_hours_this_month
     t.tolerance = config.TOLERANCE_PERCENTAGE
 
-    normal_min_hours, crunch_min_hours = t.get_minimum_daily_hours(w.business_days_left_count, w.days_left_count)
+    normal_min_hours, crunch_min_hours = t.get_minimum_daily_hours(
+        w.business_days_left_count, w.days_left_count)
 
     print("So far this month, you have tracked", )
     print(hilite("{0:.2f} hours".format(t.achieved_hours), True, True))
-    print("\nBusiness days left till deadline : {}".format(w.business_days_left_count))
+    print("\nBusiness days left till deadline : {}".format(
+        w.business_days_left_count))
     print("Total days left till deadline : {}".format(w.days_left_count))
     print("\nThis month targets [Required (minimum)] : {} ({})".format(w.required_hours_this_month,
                                                                        w.required_hours_this_month - (
-                                                                               w.required_hours_this_month * config.TOLERANCE_PERCENTAGE)))
-    print("\nTo achieve the minimum:\n\tyou should log {0:.2f} hours every business day".format(normal_min_hours))
+                                                                           w.required_hours_this_month * config.TOLERANCE_PERCENTAGE)))
+    print("\nTo achieve the minimum:\n\tyou should log {0:.2f} hours every business day".format(
+        normal_min_hours))
     print("\tor log {0:.2f} hours every day".format(crunch_min_hours))
     print("\tleft is : {0:.2f}".format(
         (w.required_hours_this_month - (w.required_hours_this_month * config.TOLERANCE_PERCENTAGE)) - t.achieved_hours))
@@ -126,10 +136,17 @@ def main():
     print(
         "\nTo achieve the required :\n\tyou should log {0:.2f} hours every business day".format(normal_required_hours))
     print("\tor log {0:.2f} hours every day".format(crunch_required_hours))
-    print("\tleft is : {0:.2f}".format(w.required_hours_this_month - t.achieved_hours))
+    print("\tleft is : {0:.2f}".format(
+        w.required_hours_this_month - t.achieved_hours))
     print("\nHow your progress looks:")
     bar = percentile_bar(t.achieved_percentage, config.TOLERANCE_PERCENTAGE)
     print(bar)
+
+    df_last_month = a.get_dataframe(
+        start_date=w.last_month_start, end_date=w.month_start)
+    df_this_month = a.get_dataframe(start_date=w.month_start, end_date=w.now)
+    path = v.plot_progress_this_month(df_last_month, df_this_month, w, t)
+    print("Your plot has been saved to {}".format(path))
 
 
 if __name__ == '__main__':

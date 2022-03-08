@@ -20,6 +20,10 @@ class WorkingTime(object):
         return datetime.now() + relativedelta(microsecond=0)
 
     @property
+    def last_month_start(self):
+        return self.now + relativedelta(day=1, hour=0, minute=0, second=0, microsecond=0) - relativedelta(months=1)
+
+    @property
     def month_start(self):
         return self.now + relativedelta(day=1, hour=0, minute=0, second=0, microsecond=0)
 

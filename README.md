@@ -15,10 +15,11 @@ If you are using linux, you most probably have Python already installed on your 
 If not, use your distro's package management system to install Python 3
 
 * Download and extract the source code from [here](https://github.com/mos3abof/toggl_target/archive/master.zip)
+* If you have not, install pipenv to manage your virtual environment
 * Navigate to the extracted directory and run the following command to install the required packages :
 
 ```
-$ pip3 install -r requirements.txt
+$ pipenv install
 ```
 
 * Copy `config.py-example` to `config.py`
@@ -49,6 +50,7 @@ Usage
 To use the script run the following command :
 
 ```
+$ pipenv shell
 $ python run.py
 ```
 
@@ -79,6 +81,9 @@ To achieve the required :
 So far you have achieved:
 
 70.59% [=================================================--------------|------]
+
+Plotting progress this month...
+Your plot has been saved to month_progress.png
 ```
 
 Contributores
@@ -86,6 +91,7 @@ Contributores
 
 * [@mos3abof](http://www.mos3abof.com)
 * [@mtayseer](http://www.mtayseer.net)
+* [@mhxie](https://github.com/mhxie)
 
 
 Support or Contact
