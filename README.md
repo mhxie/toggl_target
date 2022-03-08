@@ -1,9 +1,7 @@
 Toggl Target
 ============
 
-[![Codacy Badge](https://api.codacy.com/project/badge/Grade/6cc811c7d497451486079451ec0fbeb6)](https://app.codacy.com/app/mosab-a-ibrahim/toggl_target?utm_source=github.com&utm_medium=referral&utm_content=mos3abof/toggl_target&utm_campaign=badger)
-
-At work, we track our working hours on Toggl (www.toggl.com), so I created this small project to calculate how many hours I should work to achieve my monthly goals.
+At work, we track our working hours on Toggl Track (https://toggl.com/track/), so I created this small project to calculate how many hours I should work to achieve my monthly goals.
 
 You will need to install `requests` and `dateutil` python libraries to be able to use this.
 
@@ -51,7 +49,7 @@ To use the script run the following command :
 
 ```
 $ pipenv shell
-$ python run.py
+$ (env) python run.py
 ```
 
 The output will be something like :
